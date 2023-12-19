@@ -6,7 +6,7 @@ import useDimensions from '../shared/hooks/useDimensions';
 import { useState, useRef } from 'react';
 import { ScrollView, Platform, NativeEventEmitter } from 'react-native';
 // Views
-import Home from './home/view';
+import ChatBox from './chatBox/view';
 import Loading from '../shared/views/loading/view';
 import ServerOffline from '../shared/views/serverOffline/view';
 
@@ -14,7 +14,7 @@ const eventEmitter = new NativeEventEmitter();
 
 const ViewManager = ({ user, isLoggedIn }) => {
   const [w, v, s] = useDimensions();
-  const [currentView, setView] = useState<String>('home');
+  const [currentView, setView] = useState<String>('chatBox');
   const eventHandlersAdded = useRef<bool>(false);
 
   if (!eventHandlersAdded.current) {
@@ -32,7 +32,7 @@ const ViewManager = ({ user, isLoggedIn }) => {
     }]}
     containerStyle={style.container}
   >{
-    currentView === "home" ? <Home/> :
+    currentView === "chatBox" ? <ChatBox/> :
     currentView === "serverOffline" ? <ServerOffline/> :
     <Loading/>
   }</ScrollView>

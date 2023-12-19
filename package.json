@@ -5,8 +5,8 @@
   "main": "node_modules/expo/AppEntry.js",
   "api-git": "git@github.com:EasterCompany/Dexter-API.git",
   "scripts": {
-    "start": "env-cmd -f .env.dev npx expo start --clear",
-    "build": "npx expo export:web --clear"
+    "start": "env-cmd -f .env npx expo start --web --clear",
+    "build": "env-cmd -f .env npx expo export:web --clear"
   },
   "dependencies": {
     "@babel/core": "7.22.5",
