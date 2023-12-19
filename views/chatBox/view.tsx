@@ -18,7 +18,7 @@ const createTimestamp = () => {
   if (hour < 10) hour = "0" + hour;
   if (minutes < 10) minutes = "0" + minutes;
   return `${hour}:${minutes}`;
-}
+};
 
 const ChatBox = () => {
   const [w, v, s] = useDimensions();
@@ -27,6 +27,7 @@ const ChatBox = () => {
   const [messageLog, setMessageLog] = useState({
     history: []
   });
+
   const messageView = useRef<ScrollView>();
   const userInputField = useRef<TextInput>();
   const userQuery = useRef({
@@ -102,7 +103,7 @@ const ChatBox = () => {
 
       <TextInput
         ref={userInputField}
-        maxLength={128}
+        maxLength={300}
         readOnly={awaitResponse}
         selectTextOnFocus={!awaitResponse}
         style={[ style.userTextInputField, { opacity: awaitResponse ? 0.25 : 1 } ]}
@@ -131,8 +132,8 @@ const UserInputBubble = ({ text, timestamp }) => {
       <Text style={style.userInputBubbleText}>{text}</Text>
       <Text style={style.userInputBubbleTimestamp}>{timestamp}</Text>
     </View>
-  </View>
-}
+  </View>;
+};
 
 const DexterBubble = ({ text, timestamp }) => {
   return  <View style={style.messageContainerDexter}>
@@ -141,7 +142,7 @@ const DexterBubble = ({ text, timestamp }) => {
       <Text style={style.dexterBubbleText}>{text}</Text>
       <Text style={style.dexterBubbleTimestamp}>{timestamp}</Text>
     </View>
-  </View>
-}
+  </View>;
+};
 
 export default ChatBox;
