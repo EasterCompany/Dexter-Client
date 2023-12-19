@@ -10,18 +10,26 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon apple-touch-icon" href="/favicon.ico">
     <meta property="og:updated_time" content="{#time_of_last_build#}"/>
-    <title>{{ page_title|title }}</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-      overflow: hidden;
-    }
-    #web-app-root {
-      display: flex;
-      height: 100%;
-    }
-  </style>
+    <style>
+      /* Global */
+      html,body {
+        background-color: #202029;
+      }
+      /* Scroll Width */
+      ::-webkit-scrollbar {
+        width: 0px;
+      }
+      /* Scroll Track */
+      ::-webkit-scrollbar-track {
+        background: #202029;
+      }
+      /* Scroll Handle */
+      ::-webkit-scrollbar-thumb {
+        border-radius: 0px;
+        background: #f1f1f1;
+      }
+    </style>
+    <title>{{ page_title }}</title>
   </head>
 
   <body>

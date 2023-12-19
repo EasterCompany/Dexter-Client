@@ -1,8 +1,8 @@
 {
   "display": "standalone",
   "lang": "en",
-  "name": "overlord_native_client",
-  "short_name": "overlord_native_client",
+  "name": "Dexter",
+  "short_name": "Dexter",
   "start_url": "/?app_type=pwa",
   "orientation": "portrait",
   "background_color": "#202029",

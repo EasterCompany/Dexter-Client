@@ -4,11 +4,11 @@
     "slug": "dexter",
     "version": "0.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo_white.png",
+    "icon": "./shared/assets/image/overlord.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#202029",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./shared/assets/image/splash.png",
       "resizeMode": "contain"
     },
     "assetBundlePatterns": [
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo_white.png",
+        "foregroundImage": "./shared/assets/image/overlord.png",
         "backgroundColor": "#202029"
       }
     },
     "web": {
-      "favicon": "./assets/images/logo_white.png",
+      "favicon": "./shared/assets/image/overlord.png",
       "publicPath": "/static/dexter"
     },
     "plugins": [

@@ -1,30 +1,12 @@
-# Client __init__.py
-#   Edit this file to configure your integrations with this Client and the Server/API
-#   Imports should be done within functions that use them to avoid initialization errors
 from core.library import Path, client, dirname, realpath
 
 
 class Client(client.NativeClient):
-
-  # Client.ENVIRONMENT [ local, staging, production... ]
   ENV:str = __file__.replace('__init__.py', '.env')
-
-  # Client.DIR represents which sub-directory inside the 'clients/'
-  # directory contains the source code for this client
   DIR:str = Path(dirname(realpath(__file__))).parts[-1]
-
-  # Client.NAME represents what the stylized name of this client should be
-  # for example; this is often used to set the HTML <title> element content
-  NAME:str = DIR
-
-  # Client.PWA is a boolean which indicates whether or not to enable
-  # progressive web app features
-  PWA:bool = True
-
-  # Client.API_DOMAIN is a string which tells the client where the api will be
-  # hosted in production. This is essential for native clients as they won't
-  # have a relative domain to access when deployed to Android/iOS.
-  API_DOMAIN:str = ""
+  NAME:str = "Dexter"
+  PWA:bool = False
+  API_DOMAIN:str = "https://dexter.easter.company"
 
   def __init__(self) -> None:
     super().__init__()
