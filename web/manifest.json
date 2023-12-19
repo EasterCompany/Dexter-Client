@@ -1,0 +1,20 @@
+{
+  "display": "standalone",
+  "lang": "en",
+  "name": "overlord_native_client",
+  "short_name": "overlord_native_client",
+  "start_url": "/?app_type=pwa",
+  "orientation": "portrait",
+  "background_color": "#202029",
+  "theme_color": "#202029",
+  "edge_side_panel": {
+    "preferred_width": 376
+  },
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.my.app"
+    }
+  ],
+  "prefer_related_applications": false
+}

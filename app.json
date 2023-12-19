@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "dexter",
+    "slug": "dexter",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo_white.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#202029",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo_white.png",
+        "backgroundColor": "#202029"
+      }
+    },
+    "web": {
+      "favicon": "./assets/images/logo_white.png",
+      "publicPath": "/static/dexter"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app allows you to upload photos.",
+          "cameraPermission": "This app allows you to take & upload photos."
+        }
+      ]
+    ]
+  }
+}

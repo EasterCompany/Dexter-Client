@@ -1,0 +1,41 @@
+# .gitignore
+#  Standardised Overlord Native Client gitingore file
+#  You may need to add your own exceptions
+
+# Generic
+.expo/
+dist/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+.metro-health-check*
+*~
+
+# Developer
+.vscode/
+.idea/
+
+# Python
+.pytest_cache
+__pycache__
+
+# Node & NPM
+.env
+.env.*
+build/
+web-build/
+node_modules/
+npm-debug.*
+yarn.lock
+package-lock.json
+*.tsbuildinfo
+*.log
+
+# macOS
+.DS_Store
+
+# Shared
+shared/*

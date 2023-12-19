@@ -1,0 +1,11 @@
+{
+  "path": "clients/dexter/shared",
+  "file": [
+    "library/api.ts",
+    "library/devTools.ts",
+    "library/strings.ts"
+  ],
+  "module": [
+    "/assets/fonts/"
+  ]
+}
