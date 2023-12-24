@@ -1,5 +1,6 @@
 // Assets
 import style from './style';
+import mdStyle from './md.style';
 import errorSVG from '../../shared/assets/svg/error.svg';
 import submitTextSVG from '../../assets/svg/submitText.svg';
 // Components
@@ -9,6 +10,7 @@ import useDimensions from '../../shared/hooks/useDimensions';
 // Library
 import { POST } from '../../shared/library/api';
 import { useState, useRef, useEffect } from 'react';
+import Markdown from 'react-native-markdown-display';
 import { ScrollView, View, Image, Text, TextInput, ActivityIndicator } from 'react-native';
 
 const createTimestamp = () => {
@@ -129,7 +131,7 @@ const UserInputBubble = ({ text, timestamp }) => {
   return <View style={style.messageContainerUser}>
     <View style={style.userInputBubbleTail}/>
     <View style={style.userInputBubbleContainer}>
-      <Text style={style.userInputBubbleText}>{text}</Text>
+      <Markdown style={mdStyle} mergeStyle={false}>{text}</Markdown>
       <Text style={style.userInputBubbleTimestamp}>{timestamp}</Text>
     </View>
   </View>;
@@ -139,7 +141,7 @@ const DexterBubble = ({ text, timestamp }) => {
   return  <View style={style.messageContainerDexter}>
     <View style={style.dexterBubbleTail}/>
     <View style={style.dexterBubbleContainer}>
-      <Text style={style.dexterBubbleText}>{text}</Text>
+      <Markdown style={mdStyle} mergeStyle={false}>{text}</Markdown>
       <Text style={style.dexterBubbleTimestamp}>{timestamp}</Text>
     </View>
   </View>;
