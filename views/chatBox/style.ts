@@ -41,21 +41,19 @@ export default StyleSheet.create({
     width: 8,
     height: 8,
     transform: 'rotate(45deg)',
-    backgroundColor: '#D0700A'
+    backgroundColor: '#FE8605'
   },
 
   userInputBubbleContainer: {
     alignSelf: 'flex-end',
-    width: '60%',
-    maxWidth: 640,
-    minHeight: 38,
+    maxWidth: '75%',
     padding: 8,
     marginRight: 16,
     borderRadius: 8,
     borderBottomRightRadius: 4,
     borderBottomWidth: 3,
     borderBottomColor: '#a15402',
-    backgroundColor: '#D0700A'
+    backgroundColor: '#FE8605'
   },
 
   userInputBubbleText: {
@@ -81,9 +79,7 @@ export default StyleSheet.create({
   },
 
   dexterBubbleContainer: {
-    width: '100%',
-    maxWidth: 640,
-    minHeight: 38,
+    maxWidth: "75%",
     padding: 8,
     marginLeft: 16,
     borderRadius: 8,
@@ -112,7 +108,7 @@ export default StyleSheet.create({
     left: 0,
     bottom: 0,
     width: '100%',
-    padding: 12
+    padding: 24
   },
 
   userTextInputField: {
@@ -157,8 +153,8 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',
-    top: -16,
-    left: 38
+    top: -8,
+    left: 48
   },
 
   awaitResponseText: {
