@@ -8,7 +8,7 @@ import ImageButton from '../../shared/components/button/image';
 // Hooks
 import useDimensions from '../../shared/hooks/useDimensions';
 // Library
-import { POST } from '../../shared/library/api';
+import { POST, socketAdr } from '../../shared/library/api';
 import { useState, useRef, useEffect } from 'react';
 import Markdown from 'react-native-markdown-display';
 import { ScrollView, View, Image, Text, TextInput, ActivityIndicator } from 'react-native';
@@ -30,6 +30,7 @@ const ChatBox = () => {
     history: []
   });
 
+  const promptSocket = useRef(null);
   const messageView = useRef<ScrollView>();
   const userInputField = useRef<TextInput>();
   const userQuery = useRef({
@@ -39,7 +40,7 @@ const ChatBox = () => {
   const chatBoxWidth = v.width >= 1280 ? 1280 : v.width;
   const submitUserInput = () => {
     if (userQuery.prompt.length === 0 || awaitResponse) return;
-    setAwaitResponse(true);
+    setAwaitResponse('Sending request');
     setMessageLog({
       history: [
           ...messageLog.history,
@@ -54,26 +55,36 @@ const ChatBox = () => {
   };
 
   useEffect(() => {
-    if (userQuery.prompt.length > 0 && awaitResponse) POST(
-      'chat/query',
+    if (userQuery.prompt.length > 0 && awaitResponse === 'Sending request') POST(
+      'prompt',
       (resp) => {
         userQuery.prompt = '';
         if (resp.status === 'OK' && resp.error) setErrorEncountered(`${resp.error}`);
         else setErrorEncountered(`${resp}`);
       },
       (resp) => {
-        setMessageLog({
-          history: [
-              ...messageLog.history,
-              {
-                sender: 'dexter',
-                text: resp,
-                timestamp: createTimestamp()
-              }
-          ]
-        });
-        userQuery.prompt = '';
-        setAwaitResponse(false);
+        promptSocket.current = new WebSocket(`${socketAdr}dexter/prompt?promptId=${resp}`);
+        promptSocket.current.onopen = () => setAwaitResponse("Creating prompt request");
+        promptSocket.current.onmessage = (event:any) => {
+          const data = JSON.parse(event.data);
+          if (data.status === 'queued') setAwaitResponse("Waiting to process your request");
+          if (data.status === 'processing') setAwaitResponse("Dexter is thinking");
+          if (data.response !== null) {
+            setMessageLog({ history: [ ...messageLog.history, {
+              sender: 'dexter',
+              text: data.response,
+              timestamp: createTimestamp()
+            }]});
+          }
+        };
+        promptSocket.current.onclose = (event:any) => {
+          userQuery.prompt = '';
+          setAwaitResponse(false);
+        };
+        promptSocket.current.onerror = (event:any) => {
+          userQuery.prompt = '';
+          setErrorEncountered("Failed to process your request.");
+        }
       },
       userQuery
     );
@@ -95,7 +106,7 @@ const ChatBox = () => {
 
       {awaitResponse && errorEncountered === null && <View style={style.awaitResponseContainer}>
         <ActivityIndicator size="small" color="#FE8605" animate/>
-        <Text style={style.awaitResponseText}>Dexter is thinking...</Text>
+        <Text style={style.awaitResponseText}>{awaitResponse}...</Text>
       </View>}
 
       {errorEncountered !== null && <View style={style.awaitResponseContainer}>
@@ -106,9 +117,8 @@ const ChatBox = () => {
       <TextInput
         ref={userInputField}
         maxLength={300}
-        readOnly={awaitResponse}
-        selectTextOnFocus={!awaitResponse}
-        style={[ style.userTextInputField, { opacity: awaitResponse ? 0.25 : 1 } ]}
+        readOnly={awaitResponse !== false}
+        style={[ style.userTextInputField, { opacity: awaitResponse !== false ? 0.25 : 1 } ]}
         onChangeText={(text) => userQuery.prompt = text}
         onSubmitEditing={submitUserInput}
         onKeyPress={({ nativeEvent }) => {
