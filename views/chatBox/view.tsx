@@ -69,7 +69,7 @@ const ChatBox = () => {
           const data = JSON.parse(event.data);
           if (data.status === 'queued') setAwaitResponse("Waiting to process your request");
           if (data.status === 'processing') setAwaitResponse("Dexter is thinking");
-          if (data.response !== null) {
+          if (data.status === 'finished') {
             setMessageLog({ history: [ ...messageLog.history, {
               sender: 'dexter',
               text: data.response,
