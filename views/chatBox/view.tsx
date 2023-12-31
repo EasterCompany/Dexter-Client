@@ -70,6 +70,8 @@ const ChatBox = () => {
           if (data.status === 'queued') setAwaitResponse("Waiting to process your request");
           if (data.status === 'processing') setAwaitResponse("Dexter is thinking");
           if (data.status === 'finished') {
+            userQuery.prompt = '';
+            setAwaitResponse(false);
             setMessageLog({ history: [ ...messageLog.history, {
               sender: 'dexter',
               text: data.response,
@@ -86,7 +88,9 @@ const ChatBox = () => {
           setErrorEncountered("Failed to process your request.");
         }
       },
-      userQuery
+      {
+        messages: messageLog.history,
+      }
     );
   }, [awaitResponse]);
 
