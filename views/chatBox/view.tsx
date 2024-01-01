@@ -2,13 +2,15 @@
 import style from './style';
 import mdStyle from './md.style';
 import errorSVG from '../../shared/assets/svg/error.svg';
-import submitTextSVG from '../../assets/svg/submitText.svg';
+import micSVG from '../../shared/assets/svg/mic.svg';
+import sendSVG from '../../shared/assets/svg/send.svg';
 // Components
 import ImageButton from '../../shared/components/button/image';
 // Hooks
 import useDimensions from '../../shared/hooks/useDimensions';
 // Library
-import { POST, socketAdr } from '../../shared/library/api';
+import { Audio } from 'expo-av';
+import { POST, clientAPI, socketAdr } from '../../shared/library/api';
 import { useState, useRef, useEffect } from 'react';
 import Markdown from 'react-native-markdown-display';
 import { ScrollView, View, Image, Text, TextInput, ActivityIndicator } from 'react-native';
@@ -24,6 +26,7 @@ const createTimestamp = () => {
 
 const ChatBox = () => {
   const [w, v, s] = useDimensions();
+  const [recording, setRecording] = useState(undefined);
   const [errorEncountered, setErrorEncountered] = useState(null);
   const [awaitResponse, setAwaitResponse] = useState(false);
   const [messageLog, setMessageLog] = useState({
@@ -46,7 +49,8 @@ const ChatBox = () => {
           ...messageLog.history,
           {
             sender: 'user',
-            text: userQuery.prompt,
+            type: 'text',
+            content: userQuery.prompt,
             timestamp: createTimestamp()
           }
       ]
@@ -74,7 +78,8 @@ const ChatBox = () => {
             setAwaitResponse(false);
             setMessageLog({ history: [ ...messageLog.history, {
               sender: 'dexter',
-              text: data.response,
+              type: 'text',
+              content: data.response,
               timestamp: createTimestamp()
             }]});
           }
@@ -102,9 +107,9 @@ const ChatBox = () => {
       onContentSizeChange={() => messageView.current.scrollToEnd({animated: true})}
     >{
       messageLog.history.map((m, idx) => m.sender === 'dexter' ?
-        <DexterBubble key={idx} text={m.text} timestamp={m.timestamp}/>
+        <DexterBubble key={idx} content={m.content} timestamp={m.timestamp}/>
       :
-        <UserInputBubble key={idx} text={m.text} timestamp={m.timestamp}/>
+        <UserInputBubble key={idx} content={m.content} timestamp={m.timestamp}/>
     )}</ScrollView>
     <View style={style.userInputContainer}>
 
@@ -121,52 +126,119 @@ const ChatBox = () => {
       <TextInput
         ref={userInputField}
         maxLength={300}
-        readOnly={awaitResponse !== false}
-        style={[ style.userTextInputField, { opacity: awaitResponse !== false ? 0.25 : 1 } ]}
+        readOnly={awaitResponse !== false || recording}
+        style={[
+          style.userTextInputField,
+          { opacity: awaitResponse !== false || recording ? 0.25 : 1 }
+        ]}
         onChangeText={(text) => userQuery.prompt = text}
         onSubmitEditing={submitUserInput}
         onKeyPress={({ nativeEvent }) => {
           if (nativeEvent.key === "Enter") submitUserInput();
         }}
       />
-      <ImageButton
+      <SpeechInputButton
         disabled={awaitResponse}
-        image={submitTextSVG}
-        imageStyle={style.userTextInputSubmitButtonImage}
-        containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: awaitResponse ? 0.25 : 1 } ]}
-        containerHoverStyle={awaitResponse ? {} : style.userTextInputSubmitButtonContainerHover}
-        onPress={submitUserInput}
+        recording={recording}
+        setRecording={setRecording}
+        postTranscription={(transcribedText) => {
+          userQuery.prompt = transcribedText;
+          submitUserInput();
+        }}
       />
       <ImageButton
-        disabled={awaitResponse}
-        image={submitTextSVG}
+        disabled={awaitResponse || recording}
+        image={sendSVG}
         imageStyle={style.userTextInputSubmitButtonImage}
-        containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: awaitResponse ? 0.25 : 1 } ]}
-        containerHoverStyle={awaitResponse ? {} : style.userTextInputSubmitButtonContainerHover}
+        containerStyle={[
+          style.userTextInputSubmitButtonContainer,
+          { opacity: awaitResponse || recording ? 0.25 : 1 }
+        ]}
+        containerHoverStyle={
+          awaitResponse || recording ? {} : style.userTextInputSubmitButtonContainerHover
+        }
         onPress={submitUserInput}
       />
     </View>
   </View>
 }
 
-const UserInputBubble = ({ text, timestamp }) => {
+const UserInputBubble = ({ content, timestamp }) => {
   return <View style={style.messageContainerUser}>
     <View style={style.userInputBubbleTail}/>
     <View style={style.userInputBubbleContainer}>
-      <Markdown style={mdStyle} mergeStyle={false}>{text}</Markdown>
+      <Markdown style={mdStyle} mergeStyle={false}>{content}</Markdown>
       <Text style={style.userInputBubbleTimestamp}>{timestamp}</Text>
     </View>
   </View>;
 };
 
-const DexterBubble = ({ text, timestamp }) => {
+const DexterBubble = ({ content, timestamp }) => {
   return  <View style={style.messageContainerDexter}>
     <View style={style.dexterBubbleTail}/>
     <View style={style.dexterBubbleContainer}>
-      <Markdown style={mdStyle} mergeStyle={false}>{text}</Markdown>
+      <Markdown style={mdStyle} mergeStyle={false}>{content}</Markdown>
       <Text style={style.dexterBubbleTimestamp}>{timestamp}</Text>
     </View>
   </View>;
 };
+
+const SpeechInputButton = ({ disabled, recording, setRecording, postTranscription }) => {
+
+  async function startRecording() {
+    try {
+      console.log('Requesting permissions..');
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log('Starting recording..');
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      await recording.startAsync();
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    // read the file into a blob
+    await recording.stopAndUnloadAsync();
+    const data = await fetch(recording.getURI());
+    const blob = await data.blob();
+
+    // create a new form data
+    let formData = new FormData();
+    formData.append('file', blob);
+
+    // send the data to the API endpoint
+    fetch(`${clientAPI}transcribe`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+
+    return setRecording(undefined);
+  }
+
+  return <ImageButton
+    disabled={disabled}
+    image={micSVG}
+    imageStyle={style.userTextInputSubmitButtonImage}
+    containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: disabled ? 0.25 : 1 } ]}
+    containerHoverStyle={disabled ? {} : style.userTextInputSubmitButtonContainerHover}
+    onPress={recording ? stopRecording : startRecording}
+  />
+}
 
 export default ChatBox;
