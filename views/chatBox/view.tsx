@@ -137,6 +137,14 @@ const ChatBox = () => {
         containerHoverStyle={awaitResponse ? {} : style.userTextInputSubmitButtonContainerHover}
         onPress={submitUserInput}
       />
+      <ImageButton
+        disabled={awaitResponse}
+        image={submitTextSVG}
+        imageStyle={style.userTextInputSubmitButtonImage}
+        containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: awaitResponse ? 0.25 : 1 } ]}
+        containerHoverStyle={awaitResponse ? {} : style.userTextInputSubmitButtonContainerHover}
+        onPress={submitUserInput}
+      />
     </View>
   </View>
 }
