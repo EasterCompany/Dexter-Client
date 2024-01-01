@@ -126,10 +126,10 @@ const ChatBox = () => {
       <TextInput
         ref={userInputField}
         maxLength={300}
-        readOnly={awaitResponse !== false || recording}
+        readOnly={awaitResponse || recording}
         style={[
           style.userTextInputField,
-          { opacity: awaitResponse !== false || recording ? 0.25 : 1 }
+          { opacity: awaitResponse || recording ? 0.25 : 1 }
         ]}
         onChangeText={(text) => userQuery.prompt = text}
         onSubmitEditing={submitUserInput}
@@ -184,21 +184,21 @@ const DexterBubble = ({ content, timestamp }) => {
 };
 
 const SpeechInputButton = ({ disabled, recording, setRecording, postTranscription }) => {
+  const [recordingState, setRecordingState] = useState('');
 
   async function startRecording() {
     try {
-      console.log('Requesting permissions..');
+      setRecordingState('Waiting...');
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
-      console.log('Starting recording..');
       const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.LOW_QUALITY);
       await recording.startAsync();
       setRecording(recording);
-      console.log('Recording started');
+      setRecordingState("Listening...");
     } catch (err) {
       console.error('Failed to start recording', err);
     }
@@ -206,6 +206,7 @@ const SpeechInputButton = ({ disabled, recording, setRecording, postTranscriptio
 
   async function stopRecording() {
     // read the file into a blob
+    setRecordingState("Processing...");
     await recording.stopAndUnloadAsync();
     const data = await fetch(recording.getURI());
     const blob = await data.blob();
@@ -223,22 +224,32 @@ const SpeechInputButton = ({ disabled, recording, setRecording, postTranscriptio
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
+      setRecording(undefined);
+      if (data.status === 'OK') postTranscription(data.data)
     })
     .catch((error) => {
       console.error('Error:', error);
+      setRecording(undefined);
     });
-
-    return setRecording(undefined);
   }
 
-  return <ImageButton
-    disabled={disabled}
-    image={micSVG}
-    imageStyle={style.userTextInputSubmitButtonImage}
-    containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: disabled ? 0.25 : 1 } ]}
-    containerHoverStyle={disabled ? {} : style.userTextInputSubmitButtonContainerHover}
-    onPress={recording ? stopRecording : startRecording}
-  />
+  return <View>
+    {recording && <>
+      <View style={style.recordingPopupTail}/>
+      <View style={style.recordingPopup}>
+        <ActivityIndicator size="small" color="#0586FE" animate/>
+        <Text style={style.recordingStateText}>{recordingState}</Text>
+      </View>
+    </>}
+    <ImageButton
+      disabled={disabled}
+      image={micSVG}
+      imageStyle={style.userTextInputSubmitButtonImage}
+      containerStyle={[ style.userTextInputSubmitButtonContainer, { opacity: disabled ? 0.25 : 1 } ]}
+      containerHoverStyle={disabled ? {} : style.userTextInputSubmitButtonContainerHover}
+      onPress={() => recording ? stopRecording() : startRecording()}
+    />
+  </View>
 }
 
 export default ChatBox;

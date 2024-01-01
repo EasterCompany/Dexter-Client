@@ -154,7 +154,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     top: -8,
-    left: 48
+    left: 32
   },
 
   awaitResponseText: {
@@ -176,5 +176,38 @@ export default StyleSheet.create({
     fontFamily: 'Metro-Thin',
     fontSize: 13,
     marginLeft: 12
-  }
+  },
+
+  recordingPopup: {
+    flexDirection: 'column',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: -118,
+    left: -32,
+    width: 128,
+    height: 98,
+    borderRadius: 8,
+    backgroundColor: '#202029'
+  },
+
+  recordingPopupTail: {
+    position: 'absolute',
+    top: -38,
+    left: 18,
+    width: 24,
+    height: 24,
+    transform: 'rotate(45deg)',
+    backgroundColor: '#202029',
+  },
+
+  recordingStateText: {
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontFamily: 'Metro-Thin',
+    fontSize: 16,
+    width: '100%',
+    marginBottom: -12,
+    paddingVertical: 12
+  },
 });
