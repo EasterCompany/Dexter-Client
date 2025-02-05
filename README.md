@@ -9,7 +9,7 @@ To install this client locally, from source; run the following command from with
 has Overlord-CLI installed.
 
 ```bash
-python main.py new git@github.com:EasterCompany/Dexter-Client.git dexter
+ol clone client/dexter@EasterComapny/Dexter-Client
 ```
 
 If you need to install Overlord-CLI click [here](https://github.com/EasterCompany/Overlord-CLI).
